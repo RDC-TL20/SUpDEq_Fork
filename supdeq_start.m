@@ -25,8 +25,8 @@ if exist('AKsht', 'file')
         installed.AK = true;
     end
 end
-if exist('MakeERBFilters', 'file')
-    if ~strfind(which('MakeERBFilters'), 'SUpDEq')
+if exist('amt_start', 'file')
+    if ~strfind(which('amt_start'), 'SUpDEq')
         installed.auditory = true;
     end
 end
@@ -49,9 +49,9 @@ addpath(genpath(fullfile(pwd,'thirdParty')), '-end')
 
 % add SOFA correctly using the start script (try if the silent option works)
 try
-    run(fullfile(pwd, 'thirdParty', 'SOFA Toolbox 2.1.4', 'SOFAtoolbox', 'SOFAstart(''silent'')'))
+    run(fullfile(pwd, 'thirdParty', 'SOFAtoolbox-2.1.5', 'SOFAtoolbox', 'SOFAstart(''silent'')'))
 catch %#ok<CTCH>
-    run(fullfile(pwd, 'thirdParty', 'SOFA Toolbox 2.1.4', 'SOFAtoolbox', 'SOFAstart'))
+    run(fullfile(pwd, 'thirdParty', 'SOFAtoolbox-2.1.5', 'SOFAtoolbox', 'SOFAstart'))
 end
 
 % - remove third party tools if they were already installed outside supdeq
@@ -74,13 +74,13 @@ disp('*******************************************************************')
 disp('***** SUpDEq - Spatial Upsampling by Directional Equalization *****')
 disp('*******************************************************************')
 disp('**                                                               **')
-disp('**        (C) Christoph Pörschmann and Johannes M. Arend         **')
+disp('**        (C) Johannes M. Arend and Christoph Pörschmann         **')
 disp('**             TH Köln - University of Applied Sciences          **')
 disp('**            Institute of Communications Engineering            **')
 disp('**      Department of Acoustics and Audio Signal Processing      **')
 disp('**          Betzdorfer Str. 2, D-50679 Cologne, Germany          **')
 disp('**                                                               **')
-disp('**           Run supdeq_demo now to test the toolbox...          **')
+disp('**  Run supdeq_demo and supdeq_demo_mca now to test the toolbox  **')
 disp('**                                                               **')
 disp('*******************************************************************')
 disp('***** SUpDEq - Spatial Upsampling by Directional Equalization *****')
