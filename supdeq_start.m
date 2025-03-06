@@ -62,7 +62,7 @@ if installed.auditory
     rmpath(genpath(fullfile(pwd, 'thirdParty', 'amtoolbox-full-1.4.0')))
 end
 if installed.SOFA
-    rmpath(genpath(fullfile(pwd, 'thirdParty', 'SOFA Toolbox 2.1.4')))
+    rmpath(genpath(fullfile(pwd, 'thirdParty', 'SOFAtoolbox-2.1.5')))
 end
 if installed.SOFiA
     rmpath(genpath(fullfile(pwd, 'thirdParty', 'SOFiA R13_MIT-License')))
