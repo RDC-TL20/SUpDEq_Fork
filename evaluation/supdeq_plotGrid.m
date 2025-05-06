@@ -27,7 +27,7 @@
 %             Department of Acoustics and Audio Signal Processing
 
 %%
-function supdeq_plotGrid ( samplingGrid, plotMode )
+function fig = supdeq_plotGrid ( samplingGrid, plotMode )
 
 if nargin < 2
     plotMode = 'default';
@@ -40,7 +40,7 @@ samplingGridRad(:,2) = samplingGrid(:,2) * pi / 180;
 
 if strcmp(plotMode,'default')
 
-    figure %Sphere plot
+    fig(1) = figure; %Sphere plot
     colormap Gray;
     if size(Xm,1)>1500
         plot3(Xm,Ym,Zm,'marker','.','markerfacecolor','g','color','g','linestyle','none')
@@ -61,7 +61,7 @@ if strcmp(plotMode,'default')
     view(0,0)
     hold off;
 
-    figure %Map plot
+    fig(2) = figure; %Map plot
     plot(samplingGrid(:,1),samplingGrid(:,2),'.')
     set(gca, 'YDir','reverse')
     xlim([-10 369])
@@ -74,7 +74,7 @@ elseif strcmp(plotMode,'gray')
     %figure %Sphere plot
     colormap Gray;
     
-    plot3(Xm,Ym,Zm,'marker','o','markerfacecolor','k','color','k','linestyle','none','markersize', 1.5*8)
+    fig(1) = plot3(Xm,Ym,Zm,'marker','o','markerfacecolor','k','color','k','linestyle','none','markersize', 1.5*8)
 
     axis off; 
     grid off; 
