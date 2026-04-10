@@ -1,6 +1,6 @@
 %% SUpDEq - Spatial Upsampling by Directional Equalization
 %
-% function supdeq_plotIR( ir1, ir2, logIR, fs, FFToversize)
+% function figureHandle = supdeq_plotIR( ir1, ir2, logIR, fs, FFToversize, titleText)
 %
 % This function plots magnitude, phase, and group delay 
 % of one or two impulse responses
@@ -15,18 +15,19 @@
 %                 Default: false
 % fs            - Sampling rate
 %                 Default: 48000
-% FFToversize   - Factor to increase FFT resolution. 
+% FFToversize   - Factor to increase FFT resolution.
 %                 2^nextpow2(length(ir)) * FFToversize
+% titleText     - Optional figure title text
 %
 % Dependencies: -
 %
 % (C) 2018 by JMA, Johannes M. Arend
-%             TH Köln - University of Applied Sciences
+%             TH Kï¿½ln - University of Applied Sciences
 %             Institute of Communications Engineering
 %             Department of Acoustics and Audio Signal Processing
 
 %%
-function supdeq_plotIR( ir1, ir2, logIR, fs, FFToversize)
+function figureHandle = supdeq_plotIR( ir1, ir2, logIR, fs, FFToversize, titleText)
 
 plotir2 = true;
 if nargin < 2
@@ -48,6 +49,12 @@ end
 
 if nargin < 5 || isempty(FFToversize)
     FFToversize = 1;
+end
+
+if nargin < 6 || isempty(titleText)
+    titleText = "";
+else
+    titleText = string(titleText);
 end
 
 %Check size of ir
@@ -96,24 +103,29 @@ end
 
 %% Plot
 
-figure;
-set(gcf,'Color','w');
+figureHandle = figure;
+set(figureHandle,'Color','w');
+if strlength(titleText) > 0
+    set(figureHandle, 'Name', char(replace(titleText, newline, ' | ')));
+end
 linewidth = 1.1;
+legendLabels = {'IR1', 'IR2'};
 
 subplot(2,2,1)
 if logIR
-    plot(tVecir1,20*log10(abs(ir1)),'k','Linewidth',linewidth);
+    ir1Handle = plot(tVecir1,20*log10(abs(ir1)),'k','Linewidth',linewidth);
 else
-    plot(tVecir1,ir1,'k','Linewidth',linewidth);
+    ir1Handle = plot(tVecir1,ir1,'k','Linewidth',linewidth);
 end
 if plotir2
     hold on;
     if logIR
-        plot(tVecir2,20*log10(abs(ir2)),'r','Linewidth',linewidth);
+        ir2Handle = plot(tVecir2,20*log10(abs(ir2)),'r','Linewidth',linewidth);
     else
-        plot(tVecir2,ir2,'r','Linewidth',linewidth);
-        legend('IR1','IR2','Location','NorthEast');
+        ir2Handle = plot(tVecir2,ir2,'r','Linewidth',linewidth);
     end
+    hold off;
+    legend([ir1Handle, ir2Handle], legendLabels, 'Location', 'NorthEast');
 end
 xlabel('Time in s');
 if logIR
@@ -126,10 +138,12 @@ end
 grid on;
 
 subplot(2,2,2)
-semilogx(fVec,20*log10(abs(specir1)),'k','Linewidth',linewidth);
+spec1Handle = semilogx(fVec,20*log10(abs(specir1)),'k','Linewidth',linewidth);
 if plotir2
     hold on;
-    semilogx(fVec,20*log10(abs(specir2)),'r','Linewidth',linewidth);
+    spec2Handle = semilogx(fVec,20*log10(abs(specir2)),'r','Linewidth',linewidth);
+    hold off;
+    legend([spec1Handle, spec2Handle], legendLabels, 'Location', 'best');
 end
 xlim([20, fs/2]);
 title('Magnitude Spectrum');
@@ -138,10 +152,12 @@ ylabel('Magnitude in dB');
 grid on;
 
 subplot(2,2,3)
-semilogx(fVec,phiir1,'k','Linewidth',linewidth);
+phase1Handle = semilogx(fVec,phiir1,'k','Linewidth',linewidth);
 if plotir2
     hold on;
-    semilogx(fVec,phiir2,'r','Linewidth',linewidth);
+    phase2Handle = semilogx(fVec,phiir2,'r','Linewidth',linewidth);
+    hold off;
+    legend([phase1Handle, phase2Handle], legendLabels, 'Location', 'best');
 end
 xlim([20, fs/2]);
 xlabel('Frequency in Hz');
@@ -150,16 +166,22 @@ title('Phase');
 grid on;
 
 subplot(2,2,4)
-semilogx(fVec2,grir1*1000,'k','Linewidth',linewidth);
+groupDelay1Handle = semilogx(fVec2,grir1*1000,'k','Linewidth',linewidth);
 if plotir2
     hold on;
-    semilogx(fVec2,grir2*1000,'r','Linewidth',linewidth);
+    groupDelay2Handle = semilogx(fVec2,grir2*1000,'r','Linewidth',linewidth);
+    hold off;
+    legend([groupDelay1Handle, groupDelay2Handle], legendLabels, 'Location', 'best');
 end
 xlim([20, fs/2]);
 title('Group Delay');
 xlabel('Frequency in Hz');
 ylabel('Group Delay in ms');
 grid on;
+
+if strlength(titleText) > 0
+    sgtitle(titleText, 'Interpreter', 'none');
+end
 
 end
 
