@@ -99,7 +99,7 @@ idx = unique(xs_tri(xs_tri ~= xs_idx));
 
 % Extract all triangles from the simplices with at least one x0_s as a vertex
 simplices_new_s = [];
-for n = 1:size(idx)
+for n = 1:size(idx, 1)
     [row, ~] = find(simplices_new == idx(n));
     simplices_new_s = cat(1,simplices_new_s,simplices_new(row,:));
 end
@@ -121,7 +121,7 @@ if dim ~= 2.5
     
     % Extract all triangles from the simplices with at least one x0_s as vertex
     simplices_old_s = [];
-    for n = 1:size(idx)
+    for n = 1:size(idx, 1)
         [row_old, ~] = find(simplices_old == idx(n));
         simplices_old_s = cat(1,simplices_old_s,simplices_old(row_old,:));
     end
