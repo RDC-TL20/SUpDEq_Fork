@@ -68,7 +68,7 @@ if referenceOrder == 35
 end
 if referenceOrder == 44
     if strcmp(type,'ku100')
-        referenceHRTFdataset = importdata('HRIRs_sfd_N44.mat');
+        referenceHRTFdataset = importdata('./materials/HRIRs_ref/HRIRs_sfd_N44.mat');
     end
     if strcmp(type,'fabian')
         referenceHRTFdataset = importdata('HRIRs_FABIAN_sfd_N44.mat');
