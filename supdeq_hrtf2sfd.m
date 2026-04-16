@@ -52,7 +52,7 @@
 % Dependencies: SOFiA toolbox, AKtools
 %
 % References:
-% Benjamin Bernschütz: Microphone Arrays and Sound Field Decomposition 
+% Benjamin Bernschï¿½tz: Microphone Arrays and Sound Field Decomposition 
 % for Dynamic Binaural Recording. Ph.D. dissertation, Technical University
 % Berlin (2016).
 %
@@ -68,11 +68,17 @@
 % Conference on Acoustics, Speech, and Signal Processing, 2004, pp. IV45?IV48.
 %
 % (C) 2018/2019 by JMA, Johannes M. Arend
-%               TH Köln - University of Applied Sciences
+%               TH Kï¿½ln - University of Applied Sciences
 %               Institute of Communications Engineering
 %               Department of Acoustics and Audio Signal Processing
 
 function HRIRs_sfd = supdeq_hrtf2sfd(HRTF_L, HRTF_R, N, samplingGrid, fs, transformCore, tikhEps)
+
+% Add SOFiA toolbox to path if not already there
+sofiaPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'SOFiA R13_MIT-License', 'SOFiA');
+if ~isempty(sofiaPath) && isfolder(sofiaPath) && ~any(strcmp(path, sofiaPath))
+    addpath(sofiaPath);
+end
 
 if nargin < 5 || isempty(fs)
     fs = 48000;

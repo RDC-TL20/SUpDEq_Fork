@@ -50,6 +50,12 @@
 
 function [eqTF_L, eqTF_R] = supdeq_getEqTF(eqDataset,samplingGrid,mode,channel,transformCore,phaseOnly)
 
+% Add SOFiA toolbox to path if not already there
+sofiaPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'SOFiA R13_MIT-License', 'SOFiA');
+if ~isempty(sofiaPath) && isfolder(sofiaPath) && ~any(strcmp(path, sofiaPath))
+    addpath(sofiaPath);
+end
+
 if nargin < 3 || isempty(mode)
     mode = 'DEG';
 end

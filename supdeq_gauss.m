@@ -19,11 +19,17 @@
 % Dependencies: SOFiA toolbox
 %
 % (C) 2018 by JMA, Johannes M. Arend
-%             TH Köln - University of Applied Sciences
+%             TH Kï¿½ln - University of Applied Sciences
 %             Institute of Communications Engineering
 %             Department of Acoustics and Audio Signal Processing
 
 function [gridData, Npoints, Nmax] = supdeq_gauss(N)
+
+% Add SOFiA toolbox to path if not already there
+sofiaPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'SOFiA R13_MIT-License', 'SOFiA');
+if ~isempty(sofiaPath) && isfolder(sofiaPath) && ~any(strcmp(path, sofiaPath))
+    addpath(sofiaPath);
+end
 
 if nargin == 0
     error('Please specify the desired spatial order N!');
