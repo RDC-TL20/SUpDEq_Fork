@@ -2,20 +2,20 @@
 %
 % function [eqTF_L, eqTF_R] = supdeq_getEqTF(eqDataset,samplingGrid,mode,channel,transformCore,phaseOnly)
 %
-% This function returns an equalization transfer function (separately for the left/right ear) 
-% for an arbitrary direction, based on interpolation in the SH-domain and inverse 
+% This function returns an equalization transfer function (separately for the left/right ear)
+% for an arbitrary direction, based on interpolation in the SH-domain and inverse
 % spherical Fourier transform.
 %
 % Output:
 % eqTF_L / R    - Result of ISFT in Fourier domain (single-sided complex
-%                 spectrum). Equalization transfer function (e.g., 
-%                 rigid sphere transfer function) for L/R channel at each 
+%                 spectrum). Equalization transfer function (e.g.,
+%                 rigid sphere transfer function) for L/R channel at each
 %                 spatial sampling point
 %
 % Input:
-% eqDataset     - Struct with equalization dataset as SH-coefficients. 
+% eqDataset     - Struct with equalization dataset as SH-coefficients.
 %                 Can be the output of supdeq_getEqDataset.
-% samplingGrid  - Spatial sampling grid (Q x 2 matrix), where the first 
+% samplingGrid  - Spatial sampling grid (Q x 2 matrix), where the first
 %                 column holds the azimuth and the second the
 %                 elevation (both in degree).
 %                 Azimuth in degree (0=front, 90=left, 180=back, 270=right)
@@ -28,14 +28,14 @@
 %                 0 - Only left channel
 %                 1 - Only right channel
 %                 Default: 2 - Both channels (stereo)
-% transformCore - String to define method to be used for the inverse 
-%                 spherical Fourier transform. 
+% transformCore - String to define method to be used for the inverse
+%                 spherical Fourier transform.
 %                 'sofia - sofia_itc from SOFiA toolbox
-%                 'ak'   - AKisht from AKtools 
-%                 The results are exactly the same, but AKisht is faster 
+%                 'ak'   - AKisht from AKtools
+%                 The results are exactly the same, but AKisht is faster
 %                 with big sampling grids
 %                 Default: 'sofia'
-% phaseOnly     - Set to 1 if eqTF_L/R should only contain the phase response 
+% phaseOnly     - Set to 1 if eqTF_L/R should only contain the phase response
 %                 of eqDataset (allpass-filters) and not the magnitude response too
 %                 Default: 0 (eqTF_L/R with magnitude and phase)
 %
@@ -46,7 +46,7 @@
 % (C) 2020 by JMA, Johannes M. Arend
 %             TH K�ln - University of Applied Sciences
 %             Institute of Communications Engineering
-%             Department of Acoustics and Audio Signal Processing 
+%             Department of Acoustics and Audio Signal Processing
 
 function [eqTF_L, eqTF_R] = supdeq_getEqTF(eqDataset,samplingGrid,mode,channel,transformCore,phaseOnly)
 
@@ -54,6 +54,12 @@ function [eqTF_L, eqTF_R] = supdeq_getEqTF(eqDataset,samplingGrid,mode,channel,t
 sofiaPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'SOFiA R13_MIT-License', 'SOFiA');
 if ~isempty(sofiaPath) && isfolder(sofiaPath) && ~any(strcmp(path, sofiaPath))
     addpath(sofiaPath);
+end
+
+% Add AKtools to path if not already there
+aktoolsPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'AKtools');
+if ~isempty(aktoolsPath) && isfolder(aktoolsPath) && ~any(strcmp(path, aktoolsPath))
+    addpath(genpath(aktoolsPath));
 end
 
 if nargin < 3 || isempty(mode)
@@ -103,7 +109,7 @@ end
 %(inverse spherical Fourier transform)
 [eqTF_L,eqTF_R] = supdeq_getArbHRTF(eqDataset,samplingGrid,mode,channel,transformCore);
 
-if phaseOnly    
+if phaseOnly
     %fprintf('Phase only eqTFs...\n')
     %Get only phase response of eqTF
     eqTF_L_phase = angle(eqTF_L);

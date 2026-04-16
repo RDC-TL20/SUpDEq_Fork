@@ -2,8 +2,8 @@
 %
 % function [HRTF_L, HRTF_R] = supdeq_getArbHRTF(HRIRs_sfd,samplingGrid,mode,channel,transformCore)
 %
-% This function returns a HRTF (separately for the left/right ear) for an 
-% arbitrary direction, based on interpolation in the SH-domain and inverse 
+% This function returns a HRTF (separately for the left/right ear) for an
+% arbitrary direction, based on interpolation in the SH-domain and inverse
 % spherical Fourier transform.
 %
 % Output:
@@ -12,7 +12,7 @@
 %
 % Input:
 % HRIRs_sfd     - Struct with HRIRs in spatial Fourier domain (sfd) / SH-domain
-% samplingGrid  - Spatial sampling grid (Q x 2 matrix), where the first 
+% samplingGrid  - Spatial sampling grid (Q x 2 matrix), where the first
 %                 column holds the azimuth and the second the
 %                 elevation (both in degree).
 %                 Azimuth in degree (0=front, 90=left, 180=back, 270=right)
@@ -25,30 +25,43 @@
 %                 0 - Only left channel
 %                 1 - Only right channel
 %                 Default: 2 - Both channels (stereo)
-% transformCore - String to define method to be used for the inverse 
-%                 spherical Fourier transform. 
+% transformCore - String to define method to be used for the inverse
+%                 spherical Fourier transform.
 %                 'sofia - sofia_itc from SOFiA toolbox
-%                 'ak'   - AKisht from AKtools 
-%                 The results are exactly the same, but AKisht is faster 
+%                 'ak'   - AKisht from AKtools
+%                 The results are exactly the same, but AKisht is faster
 %                 with big sampling grids
 %                 Default: 'sofia'
 %
 % Dependencies: SOFiA toolbox, AKtools
 %
-% Reference: 
-% Bernschütz, B. (2016). Microphone Arrays and Sound Field Decomposition 
+% Reference:
+% Bernschï¿½tz, B. (2016). Microphone Arrays and Sound Field Decomposition
 %                        for Dynamic Binaural Recording. TU Berlin.
 %
 % (C) 2018 by JMA, Johannes M. Arend
-%             TH Köln - University of Applied Sciences
+%             TH Kï¿½ln - University of Applied Sciences
 %             Institute of Communications Engineering
-%             Department of Acoustics and Audio Signal Processing 
+%             Department of Acoustics and Audio Signal Processing
 
 function [HRTF_L, HRTF_R] = supdeq_getArbHRTF(HRIRs_sfd,samplingGrid,mode,channel,transformCore)
+
+% Add SOFiA toolbox to path if not already there
+sofiaPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'SOFiA R13_MIT-License', 'SOFiA');
+if ~isempty(sofiaPath) && isfolder(sofiaPath) && ~any(strcmp(path, sofiaPath))
+    addpath(sofiaPath);
+end
+
+% Add AKtools to path if not already there
+aktoolsPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'AKtools');
+if ~isempty(aktoolsPath) && isfolder(aktoolsPath) && ~any(strcmp(path, aktoolsPath))
+    addpath(genpath(aktoolsPath));
+end
 
 if nargin < 3 || isempty(mode)
     mode = 'DEG';
 end
+
 
 if nargin < 4 || isempty(channel)
     channel = 2;
@@ -86,7 +99,7 @@ end
 %% Perform transform with sofia_itc
 
 if strcmp(transformCore,'sofia')
-    %Perform inverse spherical Fourier transform 
+    %Perform inverse spherical Fourier transform
     if channel == 0 %Only left channel
 
         HRTF_L = sofia_itc(HRIRs_sfd.Hl_nm, [az el]);
@@ -108,7 +121,7 @@ end
 %% Perform transform with AKisht
 
 if strcmp(transformCore,'ak')
-    %Perform inverse spherical Fourier transform 
+    %Perform inverse spherical Fourier transform
     if channel == 0 %Only left channel
 
         HRTF_L = AKisht(HRIRs_sfd.Hl_nm,false,[az el],'complex');

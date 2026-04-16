@@ -3,21 +3,21 @@
 % function HRIRs_sfd = supdeq_sofa2sfd(SOFAobj, N, samplingGrid, FFToversize, transformCore, tikhEps)
 %
 % This function transformes spherical HRIR measurements in SOFA format
-% ('SimpleFreeFieldHRIR' convention) to the SH-domain by spherical Fourier 
+% ('SimpleFreeFieldHRIR' convention) to the SH-domain by spherical Fourier
 % transform and writes a output struct suitable for the SUpDEq toolbox.
 %
 % Output:
-% HRIRs_sfd     - Struct with Spherical Harmonic coefficients 
-%                 (SH-coefficients) for the left (Hl_nm) and right (Hr_nm) 
-%                 channel/ear, absolute frequency scale f, 
+% HRIRs_sfd     - Struct with Spherical Harmonic coefficients
+%                 (SH-coefficients) for the left (Hl_nm) and right (Hr_nm)
+%                 channel/ear, absolute frequency scale f,
 %                 transform order N, FFToversize, and sourceDistance in m.
 %
 % Input:
 % SOFAobj       - Measurement data in form of a SOFA object
 % N             - Transform order N
 % samplingGrid  - Optional input [default = nan]
-%                 If a spatial sampling grid is passed, it should be a Qx3 
-%                 matrix where the first column holds the azimuth, the 
+%                 If a spatial sampling grid is passed, it should be a Qx3
+%                 matrix where the first column holds the azimuth, the
 %                 second the elevation, and the third the sampling weights.
 %                 In this case, the SH transform is performed with weights.
 %                 If no samplingGrid (or []) is passed, the sampling grid
@@ -35,38 +35,38 @@
 %                 to the time domain data,  where  NFFT is determinded
 %                 as the next power of two of the signalSize  which is
 %                 signalSize = (lastSample-firstSample).
-% transformCore - String to define method to be used for the spherical 
-%                 Fourier transform. 
+% transformCore - String to define method to be used for the spherical
+%                 Fourier transform.
 %                 'sofia - sofia_itc from SOFiA toolbox
-%                 'ak'   - AKisht from AKtools 
-%                 The results are exactly the same, but AKisht is faster 
+%                 'ak'   - AKisht from AKtools
+%                 The results are exactly the same, but AKisht is faster
 %                 with big sampling grids
 %                 Default: 'sofia'
 % tikhEps       - Define epsilon of Tikhonov regularization if
 %                 regularization should be applied
-%                 Applying the Tikhonov regularization will always result 
-%                 in a least-square fit solution for the SH transform. 
-%                 Variable 'transformCore' is neglected when 'tikhEps' is 
-%                 defined as the regularized least-square spherical Fourier 
-%                 transform is applied directly without any third party toolbox. 
+%                 Applying the Tikhonov regularization will always result
+%                 in a least-square fit solution for the SH transform.
+%                 Variable 'transformCore' is neglected when 'tikhEps' is
+%                 defined as the regularized least-square spherical Fourier
+%                 transform is applied directly without any third party toolbox.
 %                 Default: 0 (no Tikhonov regularization)
 %
 % Dependencies: SOFiA toolbox, AKtools, SOFA API
 %
 % References:
-% Benjamin Bernsch�tz: Microphone Arrays and Sound Field Decomposition 
+% Benjamin Bernsch�tz: Microphone Arrays and Sound Field Decomposition
 % for Dynamic Binaural Recording. Ph.D. dissertation, Technical University
 % Berlin (2016).
 %
-% Boaz Rafaely: Fundamentals of spherical array processing. In. Springer 
-% topics in signal processing. Benesty, J.; Kellermann, W. (Eds.), 
+% Boaz Rafaely: Fundamentals of spherical array processing. In. Springer
+% topics in signal processing. Benesty, J.; Kellermann, W. (Eds.),
 % Springer, Heidelberg et al. (2015).
-% 
-% Franz Zotter: Analysis and synthesis of sound-radiation with spherical 
-% arrays. Ph.D. dissertation, University of Music and Performing arts (2009). 
 %
-% R. Duraiswami, D. N. Zotkin, and N. A. Gumerov, ?Interpolation and range 
-% extrapolation of HRTFs,? in Proceedings of the IEEE International 
+% Franz Zotter: Analysis and synthesis of sound-radiation with spherical
+% arrays. Ph.D. dissertation, University of Music and Performing arts (2009).
+%
+% R. Duraiswami, D. N. Zotkin, and N. A. Gumerov, ?Interpolation and range
+% extrapolation of HRTFs,? in Proceedings of the IEEE International
 % Conference on Acoustics, Speech, and Signal Processing, 2004, pp. IV45?IV48.
 %
 % (C) 2018/2019 by JMA, Johannes M. Arend
@@ -80,6 +80,12 @@ function HRIRs_sfd = supdeq_sofa2sfd(SOFAobj, N, samplingGrid, FFToversize, tran
 sofiaPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'SOFiA R13_MIT-License', 'SOFiA');
 if ~isempty(sofiaPath) && isfolder(sofiaPath) && ~any(strcmp(path, sofiaPath))
     addpath(sofiaPath);
+end
+
+% Add AKtools to path if not already there
+aktoolsPath = fullfile(fileparts(mfilename('fullpath')), 'thirdParty', 'AKtools');
+if ~isempty(aktoolsPath) && isfolder(aktoolsPath) && ~any(strcmp(path, aktoolsPath))
+    addpath(genpath(aktoolsPath));
 end
 
 if nargin < 3 || isempty(samplingGrid)
@@ -111,7 +117,7 @@ if ~isempty(samplingGrid)
         samplingGrid = samplingGrid';
         warning('Assuming grid was passed in wrong dimensions - Grid flipped');
     end
-    
+
     if size(samplingGrid,2) ~= 3
         weightsPassed = false;
     end
@@ -122,7 +128,7 @@ if ~weightsPassed && strcmp(transformCore,'sofia')
     disp('Changed transformCore to ak as no sampling weights were passed!');
     transformCore = 'ak';
 end
-    
+
 %Check SOFA object
 if ~strcmp(SOFAobj.GLOBAL_SOFAConventions,'SimpleFreeFieldHRIR')
     error('Function only valid for SOFA convention "SimpleFreeFieldHRIR".');
@@ -131,7 +137,7 @@ end
 %% If sampling grid with weights passed and transformCore sofia
 
 if tikhEps == 0 %Without Tikhonov Regularization
-    
+
     if ~isempty(samplingGrid) && weightsPassed && strcmp(transformCore,'sofia')
 
         %Convert az and el to rad again
@@ -161,7 +167,7 @@ if tikhEps == 0 %Without Tikhonov Regularization
         HRIRs_sfd.Hl_nm             = Hl_nm;
         HRIRs_sfd.Hr_nm             = Hr_nm;
         HRIRs_sfd.f                 = f;
-        HRIRs_sfd.fs                = f(end)*2; 
+        HRIRs_sfd.fs                = f(end)*2;
         HRIRs_sfd.N                 = N;
         HRIRs_sfd.FFToversize       = FFToversize;
         HRIRs_sfd.sourceDistance    = SOFAobj.SourcePosition(1,3);
@@ -179,7 +185,7 @@ if tikhEps == 0 %Without Tikhonov Regularization
         %Get IRs needed for AKsht
         %Arrays need to be flipped because AKsht needs vectors with [M x N]
         %(columns = channels)
-        irL = squeeze(SOFAobj.Data.IR(:,1,:))'; 
+        irL = squeeze(SOFAobj.Data.IR(:,1,:))';
         irR = squeeze(SOFAobj.Data.IR(:,2,:))';
 
         %Zero pad to get length according to FFToversize
@@ -236,7 +242,7 @@ if tikhEps == 0 %Without Tikhonov Regularization
         %Get IRs needed for AKsht
         %Arrays need to be flipped because AKsht needs vectors with [M x N]
         %(columns = channels)
-        irL = squeeze(SOFAobj.Data.IR(:,1,:))'; 
+        irL = squeeze(SOFAobj.Data.IR(:,1,:))';
         irR = squeeze(SOFAobj.Data.IR(:,2,:))';
 
         %Zero pad to get length according to FFToversize
@@ -276,7 +282,7 @@ end
 %% If tikhEps is not zero - Calculate SH transform with Tikhonov regularization
 
 if tikhEps ~= 0
-    
+
     sofaGrid = false;
     if isempty(samplingGrid) %If no sampling grid passed
         %Get samplingGrid from SOFA object
@@ -288,9 +294,9 @@ if tikhEps ~= 0
         weightsPassed = false;
         sofaGrid = true;
     end
-        
+
     %Get IRs
-    irL = squeeze(SOFAobj.Data.IR(:,1,:)); 
+    irL = squeeze(SOFAobj.Data.IR(:,1,:));
     irR = squeeze(SOFAobj.Data.IR(:,2,:));
 
     %Zero pad to get length according to FFToversize
@@ -330,11 +336,11 @@ if tikhEps ~= 0
 
     % Inverse SH matrix for Least-Square SH transform with Tikhonov regularization
     YnmInvTik = (Ynm' * Ynm + tikhEps*D)^-1 * Ynm';
-    
+
     %Get SH-coefficients for left and right channel
     Hl_nm = YnmInvTik*HRTF_L;
     Hr_nm = YnmInvTik*HRTF_R;
-    
+
     %Write output struct
     HRIRs_sfd.Hl_nm         = Hl_nm;
     HRIRs_sfd.Hr_nm         = Hr_nm;
@@ -344,13 +350,13 @@ if tikhEps ~= 0
     HRIRs_sfd.FFToversize   = FFToversize;
     HRIRs_sfd.sourceDistance    = SOFAobj.SourcePosition(1,3);
     HRIRs_sfd.tikhEps = tikhEps;
-    
+
     if sofaGrid
         disp('Transformation done with least-squares method with Tikhonov regularization - Applied sampling grid from SOFA object');
     else
         disp('Transformation done with least-squares method with Tikhonov regularization');
     end
-    
+
 end
 end
 
